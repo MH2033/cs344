@@ -48,19 +48,6 @@ __global__ void rgba_to_greyscale(const uchar4* const rgbaImage,
   // First create a mapping from the 2D block and grid locations
   // to an absolute 2D location in the image, then use that to
   // calculate a 1D offset
-  const int num_pixels = numRows * numCols;
-  int block_num = blockIdx.y + gridDim.y * blockIdx.x;
-  int thread_num = threadIdx.y + blockDim.y * threadIdx.x;
-
-  int curr_pixel_idx = (thread_num + block_num * blockDim.x * blockDim.y);
-  // printf("Current Pixel: %d\n", curr_pixel_idx);
-  if (curr_pixel_idx < num_pixels) {
-    double grayscale_val = rgbaImage[curr_pixel_idx].x * .299f +
-                           rgbaImage[curr_pixel_idx].y * .587f +
-                           rgbaImage[curr_pixel_idx].z * .114f;
-
-    greyImage[curr_pixel_idx] = grayscale_val;
-  }
 }
 
 void your_rgba_to_greyscale(const uchar4* const h_rgbaImage,
@@ -69,14 +56,8 @@ void your_rgba_to_greyscale(const uchar4* const h_rgbaImage,
                             size_t numCols) {
   // You must fill in the correct sizes for the blockSize and gridSize
   // currently only one block with one thread is being launched
-
-  const uchar2 block_dim{32, 32};
-  const uchar2 grid_dim{(unsigned char)(numCols / block_dim.x + 1),
-                        (unsigned char)(numRows / block_dim.y + 1)};
-
-  const dim3 blockSize(block_dim.x, block_dim.y, 1);  // TODO
-  const dim3 gridSize(grid_dim.x, grid_dim.y, 1);     // TODO
-  printf("Launching with params: grid size: (%d, %d)", grid_dim.x, grid_dim.y);
+  const dim3 blockSize(1, 1, 1);  // TODO
+  const dim3 gridSize(1, 1, 1);   // TODO
   rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows,
                                              numCols);
 
